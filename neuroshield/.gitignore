@@ -1,6 +1,13 @@
 # Python Virtual Environment
 P1/
 
+# Next.js
+.next/
+out/
+
+# Node
+node_modules/
+
 # Python cache
 __pycache__/
 *.pyc
