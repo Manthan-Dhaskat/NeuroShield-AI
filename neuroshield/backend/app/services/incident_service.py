@@ -22,7 +22,7 @@ class IncidentService:
                 action,
 
             action_status=
-                "COMPLETED",
+                "SUCCESS",
 
             details=
                 f"Action executed: {action}"

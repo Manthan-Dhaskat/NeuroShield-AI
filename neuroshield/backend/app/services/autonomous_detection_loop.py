@@ -37,10 +37,10 @@ async def autonomous_detection_loop():
 
         try:
 
-            result = (
-                DetectionService.analyze()
-            )
-
+            result = DetectionService.analyze()
+            
+            print("DETECTION RESULT:", result)
+            
             metrics = result["metrics"]
 
             MetricService.create_metric(

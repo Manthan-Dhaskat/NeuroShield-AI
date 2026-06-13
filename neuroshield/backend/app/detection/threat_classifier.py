@@ -5,13 +5,13 @@ class ThreatClassifier:
         anomaly_score: float
     ):
 
-        if anomaly_score >= 0.90:
+        if anomaly_score >= 0.105:
             return "CRITICAL"
 
-        if anomaly_score >= 0.70:
+        if anomaly_score >= 0.093:
             return "HIGH"
 
-        if anomaly_score >= 0.40:
+        if anomaly_score >= 0.08:
             return "MEDIUM"
 
         return "LOW"
