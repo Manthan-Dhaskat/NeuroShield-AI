@@ -24,18 +24,24 @@ const COLORS = [
 
 export default function SeverityChart() {
   return (
-    <div className="border rounded-xl p-5">
-      <h2 className="font-semibold mb-4">
-        Severity Distribution
-      </h2>
+    <div className="glow-card glow-border rounded-3xl p-6">
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold">
+          Severity Distribution
+        </h2>
 
-      <div className="h-72">
+        <p className="text-sm text-zinc-400">
+          Threat severity breakdown
+        </p>
+      </div>
+
+      <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
+              outerRadius={110}
               dataKey="value"
-              outerRadius={100}
             >
               {data.map((_, index) => (
                 <Cell

@@ -17,12 +17,6 @@ from app.api.routes import (
     health,
 )
 
-
-app = FastAPI(
-    title="NeuroShield API",
-    version="1.0.0"
-)
-
 @app.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket
