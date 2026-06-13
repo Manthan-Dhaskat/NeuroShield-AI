@@ -11,3 +11,4 @@ pandas
 websockets
 python-multipart
 alembic
+pydantic-settings
