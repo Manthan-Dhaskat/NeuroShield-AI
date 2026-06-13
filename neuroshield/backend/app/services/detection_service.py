@@ -6,8 +6,8 @@ from app.detection.feature_extractor import (
     FeatureExtractor
 )
 
-from app.detection.anomaly_detector import (
-    AnomalyDetector
+from app.detection.model_manager import (
+    ModelManager
 )
 
 from app.detection.threat_classifier import (
@@ -18,14 +18,17 @@ from app.detection.threat_scorer import (
     ThreatScorer
 )
 
+from app.detection.explainer import (
+    ThreatExplainer
+)
+
 
 class DetectionService:
 
-    detector = AnomalyDetector()
-
-
     @classmethod
     def analyze(cls):
+
+        ModelManager.initialize()
 
         metrics = Collector.collect()
 
@@ -35,11 +38,15 @@ class DetectionService:
             )
         )
 
-        result = cls.detector.predict(
-            features
+        result = (
+            ModelManager.detector.predict(
+                features
+            )
         )
 
-        anomaly_score = result["score"]
+        anomaly_score = (
+            result["score"]
+        )
 
         severity = (
             ThreatClassifier.classify(
@@ -54,6 +61,12 @@ class DetectionService:
             )
         )
 
+        explanations = (
+            ThreatExplainer.explain(
+                metrics
+            )
+        )
+
         return {
             "metrics":
                 metrics,
@@ -65,5 +78,8 @@ class DetectionService:
                 severity,
 
             "risk_score":
-                risk_score
+                risk_score,
+
+            "explanations":
+                explanations
         }

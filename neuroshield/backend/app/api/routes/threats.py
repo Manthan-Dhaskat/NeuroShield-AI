@@ -4,6 +4,10 @@ from app.schemas.threat import (
     ThreatCreate
 )
 
+from app.database.models import (
+    Threat
+)
+
 from app.services.threat_service import (
     ThreatService
 )
