@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+
+  mysql:
+
+    image: mysql:8
+
+    container_name: neuroshield_mysql
+
+    restart: always
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: root
+
+      MYSQL_DATABASE: neuroshield
+
+    ports:
+
+      - "3306:3306"
+
+    volumes:
+
+      - mysql_data:/var/lib/mysql
+
+      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+
+    build:
+
+      context: .
+
+      dockerfile: docker/backend.Dockerfile
+
+    container_name: neuroshield_backend
+
+    restart: always
+
+    depends_on:
+
+      - mysql
+
+    env_file:
+
+      - .env
+
+    ports:
+
+      - "8000:8000"
+
+  frontend:
+
+    build:
+
+      context: .
+
+      dockerfile: docker/frontend.Dockerfile
+
+    container_name: neuroshield_frontend
+
+    restart: always
+
+    depends_on:
+
+      - backend
+
+    ports:
+
+      - "3000:3000"
+
+volumes:
+
+  mysql_data:
