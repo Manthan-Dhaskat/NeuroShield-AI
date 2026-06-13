@@ -1,19 +1,69 @@
+from app.monitoring.collector import (
+    Collector
+)
+
+from app.detection.feature_extractor import (
+    FeatureExtractor
+)
+
+from app.detection.anomaly_detector import (
+    AnomalyDetector
+)
+
+from app.detection.threat_classifier import (
+    ThreatClassifier
+)
+
+from app.detection.threat_scorer import (
+    ThreatScorer
+)
+
+
 class DetectionService:
 
-    @staticmethod
-    def detect_anomaly(
-        metrics: dict
-    ):
+    detector = AnomalyDetector()
 
-        cpu = metrics["cpu_usage"]
 
-        if cpu > 80:
-            return {
-                "anomaly_score": 0.90,
-                "severity": "HIGH"
-            }
+    @classmethod
+    def analyze(cls):
+
+        metrics = Collector.collect()
+
+        features = (
+            FeatureExtractor.extract(
+                metrics
+            )
+        )
+
+        result = cls.detector.predict(
+            features
+        )
+
+        anomaly_score = result["score"]
+
+        severity = (
+            ThreatClassifier.classify(
+                anomaly_score
+            )
+        )
+
+        risk_score = (
+            ThreatScorer.calculate(
+                metrics,
+                anomaly_score
+            )
+        )
 
         return {
-            "anomaly_score": 0.20,
-            "severity": "LOW"
+            "metrics":
+                metrics,
+
+            "anomaly_score":
+                anomaly_score,
+
+            "severity":
+                severity,
+
+            "risk_score":
+                risk_score
         }
