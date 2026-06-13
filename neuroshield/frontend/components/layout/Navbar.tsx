@@ -292,7 +292,7 @@ export default function Navbar() {
 
         <div className="ml-2 text-right">
           <p className="text-sm text-white">
-            {new Date().toLocaleDateString()}
+            {new Date().toLocaleDateString("en-GB")}
           </p>
 
           <p className="text-xs text-zinc-500">
