@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 
 const data = [
@@ -21,22 +22,45 @@ const data = [
 
 export default function ThreatTrendChart() {
   return (
-    <div className="border rounded-xl p-5">
-      <h2 className="font-semibold mb-4">
-        Threat Trends
-      </h2>
+    <div className="glow-card glow-border rounded-3xl p-6">
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold">
+          Threat Trends
+        </h2>
 
-      <div className="h-72">
+        <p className="text-sm text-zinc-400">
+          Threat activity over the last week
+        </p>
+      </div>
+
+      <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <XAxis dataKey="day" />
-            <YAxis />
+            <CartesianGrid
+              stroke="#27272a"
+              strokeDasharray="3 3"
+            />
+
+            <XAxis
+              dataKey="day"
+              stroke="#71717a"
+            />
+
+            <YAxis
+              stroke="#71717a"
+            />
+
             <Tooltip />
+
             <Line
               type="monotone"
               dataKey="threats"
-              stroke="#ef4444"
-              strokeWidth={3}
+              stroke="#3b82f6"
+              strokeWidth={4}
+              dot={{
+                r: 5,
+                fill: "#3b82f6",
+              }}
             />
           </LineChart>
         </ResponsiveContainer>
