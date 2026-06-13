@@ -5,7 +5,6 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 
-
     async def connect(
         self,
         websocket: WebSocket
@@ -16,15 +15,14 @@ class ConnectionManager:
             websocket
         )
 
-
     def disconnect(
         self,
         websocket: WebSocket
     ):
-        self.active_connections.remove(
-            websocket
-        )
-
+        if websocket in self.active_connections:
+            self.active_connections.remove(
+                websocket
+            )
 
     async def broadcast(
         self,
@@ -35,43 +33,32 @@ class ConnectionManager:
                 message
             )
 
+    async def send_metrics(
+        self,
+        metrics: dict
+    ):
+        await self.broadcast({
+            "event": "system_metrics",
+            "data": metrics
+        })
+
+    async def send_threat(
+        self,
+        threat: dict
+    ):
+        await self.broadcast({
+            "event": "new_threat",
+            "data": threat
+        })
+
+    async def send_incident(
+        self,
+        incident: dict
+    ):
+        await self.broadcast({
+            "event": "incident_created",
+            "data": incident
+        })
+
 
 manager = ConnectionManager()
-
-async def send_metrics(
-    self,
-    metrics: dict
-):
-    await self.broadcast({
-        "event":
-            "system_metrics",
-
-        "data":
-            metrics
-    })
-
-
-async def send_threat(
-    self,
-    threat: dict
-):
-    await self.broadcast({
-        "event":
-            "new_threat",
-
-        "data":
-            threat
-    })
-
-
-async def send_incident(
-    self,
-    incident: dict
-):
-    await self.broadcast({
-        "event":
-            "incident_created",
-
-        "data":
-            incident
-    })
