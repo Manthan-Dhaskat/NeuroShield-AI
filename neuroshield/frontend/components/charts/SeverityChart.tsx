@@ -1,5 +1,7 @@
 "use client";
 
+import { useThreatStore } from "@/store/threatStore";
+
 import {
   PieChart,
   Pie,
@@ -7,13 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  { name: "Low", value: 20 },
-  { name: "Medium", value: 35 },
-  { name: "High", value: 25 },
-  { name: "Critical", value: 20 },
-];
 
 const COLORS = [
   "#22c55e",
@@ -23,6 +18,36 @@ const COLORS = [
 ];
 
 export default function SeverityChart() {
+  const { threats } = useThreatStore();
+
+  const data = [
+    {
+      name: "Low",
+      value: threats.filter(
+        (t) => t.severity === "LOW"
+      ).length,
+    },
+    {
+      name: "Medium",
+      value: threats.filter(
+        (t) => t.severity === "MEDIUM"
+      ).length,
+    },
+    {
+      name: "High",
+      value: threats.filter(
+        (t) => t.severity === "HIGH"
+      ).length,
+    },
+    {
+      name: "Critical",
+      value: threats.filter(
+        (t) =>
+          t.severity === "CRITICAL"
+      ).length,
+    },
+  ];
+
   return (
     <div className="glow-card glow-border rounded-3xl p-6">
       <div className="mb-5">
@@ -31,7 +56,7 @@ export default function SeverityChart() {
         </h2>
 
         <p className="text-sm text-zinc-400">
-          Threat severity breakdown
+          Live threat breakdown
         </p>
       </div>
 
@@ -43,12 +68,16 @@ export default function SeverityChart() {
               outerRadius={110}
               dataKey="value"
             >
-              {data.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index]}
-                />
-              ))}
+              {data.map(
+                (_, index) => (
+                  <Cell
+                    key={index}
+                    fill={
+                      COLORS[index]
+                    }
+                  />
+                )
+              )}
             </Pie>
 
             <Tooltip />

@@ -1,3 +1,7 @@
+"use client";
+
+import { useThreatStore } from "@/store/threatStore";
+
 import {
   Table,
   TableBody,
@@ -7,28 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const threats = [
-  {
-    id: 1,
-    process: "malware.exe",
-    severity: "CRITICAL",
-    score: 95,
-  },
-  {
-    id: 2,
-    process: "suspicious.py",
-    severity: "HIGH",
-    score: 82,
-  },
-  {
-    id: 3,
-    process: "network_scan.exe",
-    severity: "MEDIUM",
-    score: 68,
-  },
-];
-
 export default function ThreatTable() {
+  const { threats } = useThreatStore();
+
   return (
     <div className="glow-card glow-border rounded-3xl p-6">
       <h2 className="text-2xl font-semibold mb-6">
@@ -38,49 +23,35 @@ export default function ThreatTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-base text-zinc-300">
-              Process
-            </TableHead>
-
-            <TableHead className="text-base text-zinc-300">
-              Severity
-            </TableHead>
-
-            <TableHead className="text-base text-zinc-300">
-              Risk Score
-            </TableHead>
+            <TableHead>Process</TableHead>
+            <TableHead>Severity</TableHead>
+            <TableHead>Risk Score</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {threats.map((threat) => (
-            <TableRow
-              key={threat.id}
-              className="h-16"
-            >
-              <TableCell className="text-lg font-medium">
-                {threat.process}
+            <TableRow key={threat.id}>
+              <TableCell>
+                {threat.process_name}
               </TableCell>
 
               <TableCell
-                className={`
-                  text-base
-                  font-semibold
-
-                  ${
-                    threat.severity === "CRITICAL"
-                      ? "text-red-400"
-                      : threat.severity === "HIGH"
-                      ? "text-orange-400"
-                      : "text-yellow-400"
-                  }
-                `}
+                className={
+                  threat.severity === "CRITICAL"
+                    ? "text-red-400"
+                    : threat.severity === "HIGH"
+                    ? "text-orange-400"
+                    : threat.severity === "MEDIUM"
+                    ? "text-yellow-400"
+                    : "text-green-400"
+                }
               >
                 {threat.severity}
               </TableCell>
 
-              <TableCell className="text-lg">
-                {threat.score}
+              <TableCell>
+                {threat.risk_score}
               </TableCell>
             </TableRow>
           ))}

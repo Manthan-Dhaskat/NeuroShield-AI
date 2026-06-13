@@ -1,25 +1,34 @@
+"use client";
+
+import { useEffect } from "react";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 
-const incidents = [
-  {
-    id: 1,
-    action: "Process Terminated",
-    status: "Success",
-  },
-  {
-    id: 2,
-    action: "File Quarantined",
-    status: "Success",
-  },
-  {
-    id: 3,
-    action: "Network Block Applied",
-    status: "Pending",
-  },
-];
+import { incidentService } from "@/services/incidentService";
+import { useIncidentStore } from "@/store/incidentStore";
 
 export default function IncidentsPage() {
+  const {
+    incidents,
+    setIncidents,
+  } = useIncidentStore();
+
+  useEffect(() => {
+    const loadIncidents = async () => {
+      try {
+        const data =
+          await incidentService.getIncidents();
+
+        setIncidents(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadIncidents();
+  }, [setIncidents]);
+
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
@@ -60,11 +69,15 @@ export default function IncidentsPage() {
                 "
               >
                 <h3 className="text-xl font-semibold">
-                  {incident.action}
+                  {incident.action_taken}
                 </h3>
 
                 <p className="text-zinc-400 mt-2">
-                  Status: {incident.status}
+                  Status: {incident.action_status}
+                </p>
+
+                <p className="text-zinc-500 mt-2">
+                  {incident.details}
                 </p>
               </div>
             ))}

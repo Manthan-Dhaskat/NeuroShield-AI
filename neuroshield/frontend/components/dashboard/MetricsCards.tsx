@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ShieldAlert,
   Activity,
@@ -5,34 +7,48 @@ import {
   Cpu,
 } from "lucide-react";
 
-const metrics = [
-  {
-    title: "Total Threats",
-    value: "24",
-    change: "+12%",
-    icon: ShieldAlert,
-  },
-  {
-    title: "Active Threats",
-    value: "6",
-    change: "+3%",
-    icon: Activity,
-  },
-  {
-    title: "Critical Incidents",
-    value: "2",
-    change: "-1",
-    icon: AlertTriangle,
-  },
-  {
-    title: "System Health",
-    value: "98%",
-    change: "+2%",
-    icon: Cpu,
-  },
-];
+import { useThreatStore } from "@/store/threatStore";
 
 export default function MetricsCards() {
+  const { threats } = useThreatStore();
+
+  const totalThreats = threats.length;
+
+  const activeThreats = threats.filter(
+    (t) => t.status === "ACTIVE"
+  ).length;
+
+  const criticalThreats = threats.filter(
+    (t) => t.severity === "CRITICAL"
+  ).length;
+
+  const metrics = [
+    {
+      title: "Total Threats",
+      value: totalThreats,
+      change: "",
+      icon: ShieldAlert,
+    },
+    {
+      title: "Active Threats",
+      value: activeThreats,
+      change: "",
+      icon: Activity,
+    },
+    {
+      title: "Critical Threats",
+      value: criticalThreats,
+      change: "",
+      icon: AlertTriangle,
+    },
+    {
+      title: "System Health",
+      value: "LIVE",
+      change: "",
+      icon: Cpu,
+    },
+  ];
+
   return (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       {metrics.map((metric) => {
@@ -60,10 +76,6 @@ export default function MetricsCards() {
                 <h2 className="text-5xl font-bold mt-3 tracking-tight">
                   {metric.value}
                 </h2>
-
-                <p className="text-xs text-emerald-400 mt-2">
-                  {metric.change} from last scan
-                </p>
               </div>
 
               <div

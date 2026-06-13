@@ -1,35 +1,12 @@
+"use client";
+
 import {
   AlertTriangle,
   ShieldAlert,
   Activity,
 } from "lucide-react";
 
-const threats = [
-  {
-    id: 1,
-    process: "malware.exe",
-    severity: "CRITICAL",
-    time: "2 min ago",
-  },
-  {
-    id: 2,
-    process: "suspicious.py",
-    severity: "HIGH",
-    time: "5 min ago",
-  },
-  {
-    id: 3,
-    process: "network_scan.exe",
-    severity: "MEDIUM",
-    time: "12 min ago",
-  },
-  {
-    id: 4,
-    process: "unknown_process.dll",
-    severity: "LOW",
-    time: "18 min ago",
-  },
-];
+import { useThreatStore } from "@/store/threatStore";
 
 const getSeverityStyle = (severity: string) => {
   switch (severity) {
@@ -60,15 +37,10 @@ const getSeverityStyle = (severity: string) => {
 };
 
 export default function ThreatFeed() {
+  const { threats } = useThreatStore();
+
   return (
-    <div
-      className="
-        glow-card
-        glow-border
-        rounded-3xl
-        p-6
-      "
-    >
+    <div className="glow-card glow-border rounded-3xl p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="text-xl font-semibold">
@@ -80,25 +52,8 @@ export default function ThreatFeed() {
           </p>
         </div>
 
-        <div
-          className="
-            flex
-            items-center
-            gap-2
-            text-green-400
-            text-sm
-          "
-        >
-          <div
-            className="
-              w-2
-              h-2
-              rounded-full
-              bg-green-500
-              animate-pulse
-            "
-          />
-
+        <div className="flex items-center gap-2 text-green-400 text-sm">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           Live
         </div>
       </div>
@@ -147,11 +102,11 @@ export default function ThreatFeed() {
 
                 <div>
                   <p className="font-medium">
-                    {threat.process}
+                    {threat.process_name}
                   </p>
 
                   <p className="text-xs text-zinc-500">
-                    Process anomaly detected
+                    {threat.description}
                   </p>
                 </div>
               </div>
@@ -168,7 +123,9 @@ export default function ThreatFeed() {
                 </span>
 
                 <p className="text-xs text-zinc-500 mt-1">
-                  {threat.time}
+                  {new Date(
+                    threat.created_at
+                  ).toLocaleTimeString()}
                 </p>
               </div>
             </div>

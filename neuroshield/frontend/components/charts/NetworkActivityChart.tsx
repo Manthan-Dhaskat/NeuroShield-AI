@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   AreaChart,
   Area,
@@ -10,16 +12,46 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { time: "10:00", traffic: 120 },
-  { time: "11:00", traffic: 180 },
-  { time: "12:00", traffic: 240 },
-  { time: "13:00", traffic: 200 },
-  { time: "14:00", traffic: 310 },
-  { time: "15:00", traffic: 280 },
-];
+import { monitoringService } from "@/services/monitoringService";
 
 export default function NetworkActivityChart() {
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const metrics =
+        await monitoringService.getMetrics();
+
+      const chartData = metrics
+        .slice(0, 20)
+        .reverse()
+        .map((item: any) => ({
+          time: new Date(
+            item.timestamp
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+
+          sent:
+            Math.round(
+              item.network_sent /
+                1000000
+            ),
+
+          received:
+            Math.round(
+              item.network_received /
+                1000000
+            ),
+        }));
+
+      setData(chartData);
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="glow-card glow-border rounded-3xl p-6">
       <div className="mb-5">
@@ -28,7 +60,7 @@ export default function NetworkActivityChart() {
         </h2>
 
         <p className="text-sm text-zinc-400">
-          Real-time traffic monitoring
+          Sent vs Received Traffic (MB)
         </p>
       </div>
 
@@ -40,24 +72,26 @@ export default function NetworkActivityChart() {
               strokeDasharray="3 3"
             />
 
-            <XAxis
-              dataKey="time"
-              stroke="#71717a"
-            />
+            <XAxis dataKey="time" />
 
-            <YAxis
-              stroke="#71717a"
-            />
+            <YAxis />
 
             <Tooltip />
 
             <Area
               type="monotone"
-              dataKey="traffic"
+              dataKey="sent"
               stroke="#3b82f6"
               fill="#3b82f6"
               fillOpacity={0.2}
-              strokeWidth={3}
+            />
+
+            <Area
+              type="monotone"
+              dataKey="received"
+              stroke="#22c55e"
+              fill="#22c55e"
+              fillOpacity={0.2}
             />
           </AreaChart>
         </ResponsiveContainer>

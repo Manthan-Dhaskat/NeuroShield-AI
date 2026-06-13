@@ -5,8 +5,13 @@ import { Threat } from "@/types/threat";
 
 interface ThreatState {
   threats: Threat[];
+
   setThreats: (
     threats: Threat[]
+  ) => void;
+
+  addThreat: (
+    threat: Threat
   ) => void;
 }
 
@@ -16,4 +21,12 @@ export const useThreatStore =
 
     setThreats: (threats) =>
       set({ threats }),
+
+    addThreat: (threat) =>
+      set((state) => ({
+        threats: [
+          threat,
+          ...state.threats,
+        ],
+      })),
   }));

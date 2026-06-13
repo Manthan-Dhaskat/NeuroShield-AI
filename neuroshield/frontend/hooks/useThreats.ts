@@ -13,9 +13,17 @@ export const useThreats = () => {
         const data =
           await threatService.getThreats();
 
+        console.log(
+          "THREATS RECEIVED:",
+          data
+        );
+
         setThreats(data);
       } catch (error) {
-        console.error(error);
+        console.error(
+          "THREAT ERROR:",
+          error
+        );
       }
     };
 

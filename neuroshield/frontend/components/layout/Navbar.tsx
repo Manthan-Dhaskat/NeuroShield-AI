@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Bell,
   Shield,
@@ -5,7 +7,94 @@ import {
   Activity,
 } from "lucide-react";
 
+import { useThreatStore } from "@/store/threatStore";
+import { useIncidentStore } from "@/store/incidentStore";
+
+import { useEffect, useState } from "react";
+
+import { monitoringService } from "@/services/monitoringService";
+import { incidentService } from "@/services/incidentService";
+
 export default function Navbar() {
+  const { threats } = useThreatStore();
+
+  const {
+    incidents,
+    setIncidents,
+  } = useIncidentStore();
+
+  const [health, setHealth] =
+    useState("Healthy");
+
+  const [
+    showNotifications,
+    setShowNotifications,
+  ] = useState(false);
+
+  const criticalThreats =
+    threats.filter(
+      (t) =>
+        t.severity === "CRITICAL"
+    ).length;
+
+  const activeThreats =
+    threats.filter(
+      (t) => t.status === "ACTIVE"
+    ).length;
+
+  useEffect(() => {
+    const loadHealth =
+      async () => {
+        try {
+          const data =
+            await monitoringService.getMetrics();
+
+          const latest =
+            data[0];
+
+          if (
+            latest.cpu_usage > 90 ||
+            latest.memory_usage > 90
+          ) {
+            setHealth(
+              "Critical"
+            );
+          } else if (
+            latest.cpu_usage > 75 ||
+            latest.memory_usage > 75
+          ) {
+            setHealth(
+              "Warning"
+            );
+          } else {
+            setHealth(
+              "Healthy"
+            );
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    loadHealth();
+  }, []);
+
+  useEffect(() => {
+    const loadIncidents =
+      async () => {
+        try {
+          const data =
+            await incidentService.getIncidents();
+
+          setIncidents(data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    loadIncidents();
+  }, [setIncidents]);
+
   return (
     <header
       className="
@@ -23,7 +112,6 @@ export default function Navbar() {
         justify-between
       "
     >
-      {/* Left Section */}
       <div>
         <h2 className="text-xl font-semibold text-white">
           Security Operations Center
@@ -34,10 +122,7 @@ export default function Navbar() {
         </p>
       </div>
 
-      {/* Right Section */}
       <div className="flex items-center gap-4">
-        
-        {/* Critical Threats */}
         <div
           className="
             flex
@@ -57,11 +142,10 @@ export default function Navbar() {
           />
 
           <span className="text-sm text-red-400">
-            2 Critical
+            {criticalThreats} Critical
           </span>
         </div>
 
-        {/* Active Threats */}
         <div
           className="
             flex
@@ -81,11 +165,10 @@ export default function Navbar() {
           />
 
           <span className="text-sm text-orange-400">
-            6 Active
+            {activeThreats} Active
           </span>
         </div>
 
-        {/* System Health */}
         <div
           className="
             flex
@@ -105,43 +188,108 @@ export default function Navbar() {
           />
 
           <span className="text-sm text-green-400">
-            Healthy
+            {health}
           </span>
         </div>
 
-        {/* Notification Button */}
-        <button
-          className="
-            relative
-            h-11
-            w-11
-            rounded-xl
-            border
-            border-zinc-700
-            bg-zinc-800
-            flex
-            items-center
-            justify-center
-            hover:bg-zinc-700
-            transition-all
-          "
-        >
-          <Bell size={18} />
-
-          <span
+        <div className="relative">
+          <button
+            onClick={() =>
+              setShowNotifications(
+                !showNotifications
+              )
+            }
             className="
-              absolute
-              top-2
-              right-2
-              h-2
-              w-2
-              rounded-full
-              bg-red-500
+              relative
+              h-11
+              w-11
+              rounded-xl
+              border
+              border-zinc-700
+              bg-zinc-800
+              flex
+              items-center
+              justify-center
+              hover:bg-zinc-700
+              transition-all
             "
-          />
-        </button>
+          >
+            <Bell size={18} />
 
-        {/* Date */}
+            {incidents.length > 0 && (
+              <span
+                className="
+                  absolute
+                  top-2
+                  right-2
+                  h-2
+                  w-2
+                  rounded-full
+                  bg-red-500
+                "
+              />
+            )}
+          </button>
+
+          {showNotifications && (
+            <div
+              className="
+                absolute
+                right-0
+                mt-3
+                w-96
+                rounded-2xl
+                border
+                border-zinc-800
+                bg-zinc-900
+                shadow-2xl
+                p-4
+                z-50
+              "
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                Recent Incidents
+              </h3>
+
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {incidents.length === 0 ? (
+                  <p className="text-zinc-500">
+                    No incidents found
+                  </p>
+                ) : (
+                  incidents.map(
+                    (incident) => (
+                      <div
+                        key={incident.id}
+                        className="
+                          rounded-xl
+                          border
+                          border-zinc-800
+                          p-3
+                        "
+                      >
+                        <div className="flex justify-between">
+                          <span className="font-medium">
+                            {incident.action_taken}
+                          </span>
+
+                          <span className="text-xs text-green-400">
+                            {incident.action_status}
+                          </span>
+                        </div>
+
+                        <p className="text-sm text-zinc-400 mt-2">
+                          {incident.details}
+                        </p>
+                      </div>
+                    )
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="ml-2 text-right">
           <p className="text-sm text-white">
             {new Date().toLocaleDateString()}

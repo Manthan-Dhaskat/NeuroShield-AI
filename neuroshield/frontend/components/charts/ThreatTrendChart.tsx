@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   LineChart,
   Line,
@@ -10,26 +12,44 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { day: "Mon", threats: 4 },
-  { day: "Tue", threats: 7 },
-  { day: "Wed", threats: 5 },
-  { day: "Thu", threats: 9 },
-  { day: "Fri", threats: 12 },
-  { day: "Sat", threats: 8 },
-  { day: "Sun", threats: 6 },
-];
+import { monitoringService } from "@/services/monitoringService";
 
 export default function ThreatTrendChart() {
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const metrics =
+        await monitoringService.getMetrics();
+
+      const chartData = metrics
+        .slice(0, 20)
+        .reverse()
+        .map((item: any) => ({
+          time: new Date(
+            item.timestamp
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          cpu: item.cpu_usage,
+        }));
+
+      setData(chartData);
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="glow-card glow-border rounded-3xl p-6">
       <div className="mb-5">
         <h2 className="text-xl font-semibold">
-          Threat Trends
+          CPU Usage Trend
         </h2>
 
         <p className="text-sm text-zinc-400">
-          Threat activity over the last week
+          Live CPU monitoring
         </p>
       </div>
 
@@ -41,26 +61,17 @@ export default function ThreatTrendChart() {
               strokeDasharray="3 3"
             />
 
-            <XAxis
-              dataKey="day"
-              stroke="#71717a"
-            />
+            <XAxis dataKey="time" />
 
-            <YAxis
-              stroke="#71717a"
-            />
+            <YAxis />
 
             <Tooltip />
 
             <Line
               type="monotone"
-              dataKey="threats"
+              dataKey="cpu"
               stroke="#3b82f6"
-              strokeWidth={4}
-              dot={{
-                r: 5,
-                fill: "#3b82f6",
-              }}
+              strokeWidth={3}
             />
           </LineChart>
         </ResponsiveContainer>
