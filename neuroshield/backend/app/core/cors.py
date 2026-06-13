@@ -1,4 +1,6 @@
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import (
+    CORSMiddleware
+)
 
 
 def setup_cors(app):
@@ -7,7 +9,7 @@ def setup_cors(app):
         CORSMiddleware,
 
         allow_origins=[
-            "http://localhost:3000",
+            "http://localhost:3000"
         ],
 
         allow_credentials=True,

@@ -1,7 +1,13 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import (
+    FastAPI,
+    WebSocket,
+)
+
 import asyncio
 
-from app.api.websocket.manager import manager
+from app.api.websocket.manager import (
+    manager
+)
 
 from app.core.cors import (
     setup_cors
@@ -23,7 +29,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for Next.js frontend
 setup_cors(app)
 
 
@@ -31,14 +36,22 @@ setup_cors(app)
 async def websocket_endpoint(
     websocket: WebSocket
 ):
-    await manager.connect(websocket)
+
+    await manager.connect(
+        websocket
+    )
 
     try:
+
         while True:
+
             await websocket.receive_text()
 
     except Exception:
-        manager.disconnect(websocket)
+
+        manager.disconnect(
+            websocket
+        )
 
 
 app.include_router(
@@ -68,8 +81,10 @@ app.include_router(
 
 @app.get("/")
 def root():
+
     return {
-        "message": "NeuroShield API Running"
+        "message":
+            "NeuroShield API Running"
     }
 
 

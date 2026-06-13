@@ -7,7 +7,10 @@ from sqlalchemy import (
     ForeignKey,
 )
 
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import (
+    declarative_base,
+    relationship,
+)
 
 from datetime import datetime
 
@@ -17,18 +20,38 @@ Base = declarative_base()
 class Threat(Base):
     __tablename__ = "threats"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True
+    )
 
-    process_name = Column(String(255))
-    pid = Column(Integer)
+    process_name = Column(
+        String(255)
+    )
 
-    anomaly_score = Column(Float)
-    risk_score = Column(Float)
+    pid = Column(
+        Integer
+    )
 
-    severity = Column(String(50))
-    status = Column(String(50))
+    anomaly_score = Column(
+        Float
+    )
 
-    description = Column(String(500))
+    risk_score = Column(
+        Float
+    )
+
+    severity = Column(
+        String(50)
+    )
+
+    status = Column(
+        String(50)
+    )
+
+    description = Column(
+        String(500)
+    )
 
     created_at = Column(
         DateTime,
@@ -40,21 +63,43 @@ class Threat(Base):
         default=datetime.utcnow
     )
 
+    incidents = relationship(
+        "Incident",
+        backref="threat"
+    )
+
+    explanations = relationship(
+        "ThreatExplanation",
+        backref="threat"
+    )
+
 
 class Incident(Base):
     __tablename__ = "incidents"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True
+    )
 
     threat_id = Column(
         Integer,
-        ForeignKey("threats.id")
+        ForeignKey(
+            "threats.id"
+        )
     )
 
-    action_taken = Column(String(255))
-    action_status = Column(String(255))
+    action_taken = Column(
+        String(255)
+    )
 
-    details = Column(String(500))
+    action_status = Column(
+        String(255)
+    )
+
+    details = Column(
+        String(500)
+    )
 
     created_at = Column(
         DateTime,
@@ -65,17 +110,30 @@ class Incident(Base):
 class SystemMetric(Base):
     __tablename__ = "system_metrics"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True
+    )
 
-    cpu_usage = Column(Float)
+    cpu_usage = Column(
+        Float
+    )
 
-    memory_usage = Column(Float)
+    memory_usage = Column(
+        Float
+    )
 
-    disk_usage = Column(Float)
+    disk_usage = Column(
+        Float
+    )
 
-    network_sent = Column(Float)
+    network_sent = Column(
+        Float
+    )
 
-    network_received = Column(Float)
+    network_received = Column(
+        Float
+    )
 
     timestamp = Column(
         DateTime,
@@ -86,13 +144,18 @@ class SystemMetric(Base):
 class ThreatExplanation(Base):
     __tablename__ = "threat_explanations"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True
+    )
 
     threat_id = Column(
         Integer,
-        ForeignKey("threats.id")
+        ForeignKey(
+            "threats.id"
+        )
     )
 
-    reason = Column(String(500))
-
-    weight = Column(Float)
+    explanation = Column(
+        String(1000)
+    )
