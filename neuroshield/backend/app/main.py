@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+from app.api.websocket.manager import manager
 
 from app.api.routes import (
     threats,
@@ -6,6 +7,23 @@ from app.api.routes import (
     incidents,
     health,
 )
+
+@app.websocket("/ws")
+async def websocket_endpoint(
+    websocket: WebSocket
+):
+    await manager.connect(
+        websocket
+    )
+
+    try:
+        while True:
+            await websocket.receive_text()
+
+    except Exception:
+        manager.disconnect(
+            websocket
+        )
 
 app = FastAPI(
     title="NeuroShield API",
