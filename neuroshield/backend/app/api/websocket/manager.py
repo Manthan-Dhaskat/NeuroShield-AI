@@ -37,3 +37,41 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+
+async def send_metrics(
+    self,
+    metrics: dict
+):
+    await self.broadcast({
+        "event":
+            "system_metrics",
+
+        "data":
+            metrics
+    })
+
+
+async def send_threat(
+    self,
+    threat: dict
+):
+    await self.broadcast({
+        "event":
+            "new_threat",
+
+        "data":
+            threat
+    })
+
+
+async def send_incident(
+    self,
+    incident: dict
+):
+    await self.broadcast({
+        "event":
+            "incident_created",
+
+        "data":
+            incident
+    })

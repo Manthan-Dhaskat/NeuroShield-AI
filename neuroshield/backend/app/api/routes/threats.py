@@ -1,5 +1,13 @@
 from fastapi import APIRouter
 
+from app.schemas.threat import (
+    ThreatCreate
+)
+
+from app.services.threat_service import (
+    ThreatService
+)
+
 router = APIRouter()
 
 
@@ -9,3 +17,25 @@ def health_check():
         "status": "healthy",
         "service": "NeuroShield"
     }
+
+@router.post("/")
+def create_threat(
+    payload: ThreatCreate
+):
+
+    db = SessionLocal()
+
+    try:
+
+        threat = (
+            ThreatService.create_threat(
+                db,
+                payload.model_dump()
+            )
+        )
+
+        return threat
+
+    finally:
+
+        db.close()

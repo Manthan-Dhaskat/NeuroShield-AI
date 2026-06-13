@@ -1,11 +1,26 @@
 from fastapi import FastAPI, WebSocket
 from app.api.websocket.manager import manager
+import asyncio
+
+from app.services.monitoring_loop import (
+    monitoring_loop
+)
+
+from app.services.autonomous_detection_loop import (
+    autonomous_detection_loop
+)
 
 from app.api.routes import (
     threats,
     monitoring,
     incidents,
     health,
+)
+
+
+app = FastAPI(
+    title="NeuroShield API",
+    version="1.0.0"
 )
 
 @app.websocket("/ws")
@@ -25,10 +40,6 @@ async def websocket_endpoint(
             websocket
         )
 
-app = FastAPI(
-    title="NeuroShield API",
-    version="1.0.0"
-)
 
 app.include_router(
     threats.router,
@@ -60,3 +71,11 @@ def root():
     return {
         "message": "NeuroShield API Running"
     }
+
+
+@app.on_event("startup")
+async def startup_event():
+
+    asyncio.create_task(
+        autonomous_detection_loop()
+    )
