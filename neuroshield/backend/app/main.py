@@ -1,9 +1,10 @@
 from fastapi import FastAPI, WebSocket
-from app.api.websocket.manager import manager
 import asyncio
 
-from app.services.monitoring_loop import (
-    monitoring_loop
+from app.api.websocket.manager import manager
+
+from app.core.cors import (
+    setup_cors
 )
 
 from app.services.autonomous_detection_loop import (
@@ -22,22 +23,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Enable CORS for Next.js frontend
+setup_cors(app)
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket
 ):
-    await manager.connect(
-        websocket
-    )
+    await manager.connect(websocket)
 
     try:
         while True:
             await websocket.receive_text()
 
     except Exception:
-        manager.disconnect(
-            websocket
-        )
+        manager.disconnect(websocket)
 
 
 app.include_router(
