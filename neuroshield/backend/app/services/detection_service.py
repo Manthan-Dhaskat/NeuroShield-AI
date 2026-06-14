@@ -66,12 +66,6 @@ class DetectionService:
                 metrics
             )
         )
-
-        print(
-            f"Score={anomaly_score} "
-            f"Severity={severity} "
-            f"Risk={risk_score}"
-        )
         
         return {
             "metrics":
