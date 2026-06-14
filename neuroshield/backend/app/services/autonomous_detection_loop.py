@@ -151,4 +151,4 @@ async def autonomous_detection_loop():
 
             db.close()
 
-        await asyncio.sleep(15)
+        await asyncio.sleep(25)
