@@ -1,10 +1,42 @@
+"use client";
+
+import { useEffect } from "react";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 
 import ThreatTable from "@/components/threats/ThreatTable";
 import ThreatExplanation from "@/components/threats/ThreatExplanation";
 
+import { threatService } from "@/services/threatService";
+import { useThreatStore } from "@/store/threatStore";
+
 export default function ThreatsPage() {
+  const {
+    threats,
+    setThreats,
+  } = useThreatStore();
+
+  useEffect(() => {
+    const loadThreats = async () => {
+      try {
+        const data =
+          await threatService.getThreats();
+
+        setThreats(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadThreats();
+  }, [setThreats]);
+
+  const latestExplanation =
+    threats.length > 0
+      ? threats[0].description
+      : "No active threats detected.";
+
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
@@ -36,13 +68,9 @@ export default function ThreatsPage() {
           <ThreatTable />
 
           <ThreatExplanation
-            explanation="
-            AI identified abnormal process behavior,
-            suspicious network communication patterns,
-            and elevated resource consumption that
-            significantly deviated from normal system
-            activity.
-            "
+            explanation={
+              latestExplanation
+            }
           />
         </main>
       </div>

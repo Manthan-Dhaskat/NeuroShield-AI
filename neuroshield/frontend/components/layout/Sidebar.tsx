@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   LayoutDashboard,
@@ -10,6 +11,9 @@ import {
   AlertTriangle,
   Settings,
 } from "lucide-react";
+
+import { monitoringService }
+  from "@/services/monitoringService";
 
 const items = [
   {
@@ -41,6 +45,49 @@ const items = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+
+  const [status, setStatus] =
+    useState("Checking...");
+
+  useEffect(() => {
+    const checkStatus =
+      async () => {
+        try {
+          const metrics =
+            await monitoringService.getMetrics();
+
+          if (
+            metrics &&
+            metrics.length > 0
+          ) {
+            setStatus(
+              "Monitoring Active"
+            );
+          } else {
+            setStatus(
+              "Monitoring Offline"
+            );
+          }
+        } catch {
+          setStatus(
+            "Monitoring Offline"
+          );
+        }
+      };
+
+    checkStatus();
+
+    const interval =
+      setInterval(
+        checkStatus,
+        10000
+      );
+
+    return () =>
+      clearInterval(
+        interval
+      );
+  }, []);
 
   return (
     <aside
@@ -91,10 +138,12 @@ export default function Sidebar() {
 
         <nav className="space-y-2">
           {items.map((item) => {
-            const Icon = item.icon;
+            const Icon =
+              item.icon;
 
             const isActive =
-              pathname === item.href;
+              pathname ===
+              item.href;
 
             return (
               <Link
@@ -144,17 +193,38 @@ export default function Sidebar() {
 
           <div className="flex items-center gap-2 mt-2">
             <div
-              className="
+              className={`
                 w-3
                 h-3
                 rounded-full
-                bg-green-500
                 animate-pulse
-              "
+                ${
+                  status ===
+                  "Monitoring Active"
+                    ? "bg-green-500"
+                    : status ===
+                      "Checking..."
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
+                }
+              `}
             />
 
-            <span className="text-sm text-green-400">
-              Monitoring Active
+            <span
+              className={`
+                text-sm
+                ${
+                  status ===
+                  "Monitoring Active"
+                    ? "text-green-400"
+                    : status ===
+                      "Checking..."
+                    ? "text-yellow-400"
+                    : "text-red-400"
+                }
+              `}
+            >
+              {status}
             </span>
           </div>
         </div>

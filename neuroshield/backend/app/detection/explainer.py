@@ -1,30 +1,43 @@
 class ThreatExplainer:
 
     @staticmethod
-    def explain(
-        metrics: dict
-    ):
+    def explain(metrics):
 
-        reasons = []
+        explanations = []
 
-        if metrics["cpu_usage"] > 80:
-            reasons.append(
-                "High CPU utilization"
+        if metrics["cpu_usage"] > 70:
+            explanations.append(
+                "High CPU utilization detected"
             )
 
-        if metrics["memory_usage"] > 85:
-            reasons.append(
-                "High memory utilization"
+        if metrics["memory_usage"] > 75:
+            explanations.append(
+                "Excessive memory consumption observed"
+            )
+
+        if metrics["disk_usage"] > 85:
+            explanations.append(
+                "Disk utilization approaching capacity"
+            )
+
+        if metrics["network_sent"] > 50000000:
+            explanations.append(
+                "Abnormally high outbound network traffic"
+            )
+
+        if metrics["network_received"] > 50000000:
+            explanations.append(
+                "Abnormally high inbound network traffic"
             )
 
         if metrics["process_count"] > 300:
-            reasons.append(
-                "Abnormal process count"
+            explanations.append(
+                "Unusual number of active processes"
             )
 
-        if metrics["network_sent"] > 100000000:
-            reasons.append(
-                "Unusual network traffic"
+        if not explanations:
+            explanations.append(
+                "System operating within normal parameters"
             )
 
-        return reasons
+        return explanations

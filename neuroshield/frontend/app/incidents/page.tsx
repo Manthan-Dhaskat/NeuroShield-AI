@@ -68,9 +68,15 @@ export default function IncidentsPage() {
                   p-5
                 "
               >
-                <h3 className="text-xl font-semibold">
-                  {incident.action_taken}
-                </h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold">
+                    {incident.action_taken}
+                  </h3>
+
+                  <span className="text-red-400 font-medium">
+                    Threat #{incident.threat_id}
+                  </span>
+                </div>
 
                 <p className="text-zinc-400 mt-2">
                   Status: {incident.action_status}
@@ -78,6 +84,10 @@ export default function IncidentsPage() {
 
                 <p className="text-zinc-500 mt-2">
                   {incident.details}
+                </p>
+
+                <p className="text-xs text-zinc-600 mt-3">
+                  Incident #{incident.id}
                 </p>
               </div>
             ))}

@@ -1,3 +1,5 @@
+from sklearn import metrics
+
 from app.monitoring.collector import (
     Collector
 )
@@ -48,16 +50,16 @@ class DetectionService:
             result["score"]
         )
 
-        severity = (
-            ThreatClassifier.classify(
-                anomaly_score
-            )
-        )
-
         risk_score = (
             ThreatScorer.calculate(
                 metrics,
                 anomaly_score
+            )
+        )
+
+        severity = (
+            ThreatClassifier.classify(
+                risk_score
             )
         )
 

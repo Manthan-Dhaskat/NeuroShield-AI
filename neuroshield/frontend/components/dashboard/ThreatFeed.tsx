@@ -26,6 +26,14 @@ const getSeverityStyle = (severity: string) => {
         icon: ShieldAlert,
       };
 
+    case "YELLOW":
+      return {
+        color: "text-yellow-400",
+        bg: "bg-yellow-500/10",
+        border: "border-yellow-500/20",
+        icon: Activity,
+      };
+
     default:
       return {
         color: "text-blue-400",

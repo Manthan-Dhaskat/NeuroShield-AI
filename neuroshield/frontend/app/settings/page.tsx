@@ -1,7 +1,55 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 
+import { monitoringService } from "@/services/monitoringService";
+
 export default function SettingsPage() {
+  const [monitoringStatus, setMonitoringStatus] =
+    useState("Checking...");
+
+  useEffect(() => {
+    const loadStatus = async () => {
+      try {
+        const metrics =
+          await monitoringService.getMetrics();
+
+        if (
+          metrics &&
+          metrics.length > 0
+        ) {
+          setMonitoringStatus(
+            "Active"
+          );
+        } else {
+          setMonitoringStatus(
+            "Offline"
+          );
+        }
+      } catch {
+        setMonitoringStatus(
+          "Offline"
+        );
+      }
+    };
+
+    loadStatus();
+
+    const interval =
+      setInterval(
+        loadStatus,
+        10000
+      );
+
+    return () =>
+      clearInterval(
+        interval
+      );
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
@@ -46,12 +94,26 @@ export default function SettingsPage() {
 
           <div className="glow-card glow-border rounded-3xl p-6">
             <h2 className="text-xl font-semibold mb-3">
-              Detection Threshold
+              Detection Thresholds
             </h2>
 
-            <p className="text-zinc-400">
-              Current Risk Threshold: 75
-            </p>
+            <div className="space-y-2 text-zinc-300">
+              <p>
+                Critical: 33+
+              </p>
+
+              <p>
+                High: 32+
+              </p>
+
+              <p>
+                Medium: 30+
+              </p>
+
+              <p>
+                Low: &lt; 30
+              </p>
+            </div>
           </div>
 
           <div className="glow-card glow-border rounded-3xl p-6">
@@ -59,8 +121,15 @@ export default function SettingsPage() {
               Monitoring Status
             </h2>
 
-            <p className="text-green-400">
-              Active
+            <p
+              className={
+                monitoringStatus ===
+                "Active"
+                  ? "text-green-400"
+                  : "text-red-400"
+              }
+            >
+              {monitoringStatus}
             </p>
           </div>
         </main>
