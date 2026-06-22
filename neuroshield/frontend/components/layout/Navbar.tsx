@@ -50,9 +50,13 @@ export default function Navbar() {
             await monitoringService.getMetrics();
 
           const latest =
-            data[0];
+            data && data.length > 0
+              ? data[0]
+              : null;
 
-          if (
+          if (!latest) {
+            setHealth("Unknown");
+          } else if (
             latest.cpu_usage > 90 ||
             latest.memory_usage > 90
           ) {

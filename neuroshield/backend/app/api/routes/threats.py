@@ -30,7 +30,11 @@ def get_threats():
         threats = (
             db.query(
                 Threat
-            ).all()
+            )
+            .order_by(
+                Threat.id.desc()
+            )
+            .all()
         )
 
         return threats

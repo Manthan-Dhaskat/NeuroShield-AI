@@ -55,12 +55,12 @@ class Threat(Base):
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now
     )
 
     updated_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now
     )
 
     incidents = relationship(
@@ -103,7 +103,7 @@ class Incident(Base):
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now
     )
 
 
@@ -137,7 +137,7 @@ class SystemMetric(Base):
 
     timestamp = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now
     )
 
 

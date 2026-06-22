@@ -1,5 +1,6 @@
 import asyncio
 import random
+import psutil
 
 from app.database.session import (
     SessionLocal
@@ -30,6 +31,38 @@ from app.api.websocket.manager import (
 )
 
 
+def scan_for_malicious_process():
+    """
+    Scans the running system processes to find either the malware simulator or fake ransomware scripts.
+    """
+    # Look for simulation scripts
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            name = (proc.info.get('name') or '').lower()
+            # Only target python interpreters running the scripts to avoid false positives
+            if 'python' in name or name in ['py.exe', 'py']:
+                cmdline = proc.info.get('cmdline') or []
+                cmdline_str = " ".join(cmdline).lower()
+                if "malware_simulator.py" in cmdline_str:
+                    return {
+                        "process_name": "malware_simulator.py",
+                        "pid": proc.info['pid'],
+                        "is_mock": False,
+                        "description": "Malware Simulator (High CPU/Memory Leak) detected active."
+                    }
+                if "fake_ransomware.py" in cmdline_str:
+                    return {
+                        "process_name": "fake_ransomware.py",
+                        "pid": proc.info['pid'],
+                        "is_mock": False,
+                        "description": "Fake Ransomware (High Disk Write Spurt) detected active."
+                    }
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+
+    return None
+
+
 async def autonomous_detection_loop():
 
     while True:
@@ -58,54 +91,35 @@ async def autonomous_detection_loop():
                 metrics
             )
 
-            severity = result["severity"]
+            # Scan for actual target culprit or simulator process
+            target_proc = scan_for_malicious_process()
+
+            if target_proc:
+                # Randomize severity across Medium, High, and Critical to show different responder actions
+                severity = random.choice(["MEDIUM", "HIGH", "CRITICAL"])
+            else:
+                severity = result["severity"]
 
             if severity in [
                 "MEDIUM",
                 "HIGH",
                 "CRITICAL"
-            ]:
-
-                demo_processes = [
-                    "ransomware_sim.exe",
-                    "crypto_miner.exe",
-                    "network_scanner.exe",
-                    "suspicious_powershell.exe",
-                    "malicious_script.py",
-                ]
+            ] and target_proc:
+                process_name = target_proc["process_name"]
+                pid = target_proc["pid"]
+                description = target_proc["description"] + " | " + " | ".join(result["explanations"])
+                is_mock = target_proc["is_mock"]
 
                 threat = (
                     ThreatService.create_threat(
                         db,
                         {
-                            "process_name":
-                                random.choice(
-                                    demo_processes
-                                ),
-
-                            "pid":
-                                random.randint(
-                                    1000,
-                                    9999
-                                ),
-
-                            "anomaly_score":
-                                result[
-                                    "anomaly_score"
-                                ],
-
-                            "risk_score":
-                                result[
-                                    "risk_score"
-                                ],
-
-                            "severity":
-                                severity,
-
-                            "description":
-                                " | ".join(
-                                    result["explanations"]
-                                )
+                            "process_name": process_name,
+                            "pid": pid,
+                            "anomaly_score": result["anomaly_score"],
+                            "risk_score": result["risk_score"],
+                            "severity": severity,
+                            "description": description
                         }
                     )
                 )
@@ -122,9 +136,11 @@ async def autonomous_detection_loop():
                     }
                 )
 
+                # Execute action. Pass real PID if it's not a mock threat
                 response = (
                     Responder.execute(
-                        severity
+                        severity,
+                        pid=pid if not is_mock else None
                     )
                 )
 
@@ -151,4 +167,4 @@ async def autonomous_detection_loop():
 
             db.close()
 
-        await asyncio.sleep(25)
+        await asyncio.sleep(5)

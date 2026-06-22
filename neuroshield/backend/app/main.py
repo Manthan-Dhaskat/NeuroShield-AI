@@ -13,6 +13,10 @@ from app.core.cors import (
     setup_cors
 )
 
+from app.database.init_db import (
+    initialize_database
+)
+
 from app.services.autonomous_detection_loop import (
     autonomous_detection_loop
 )
@@ -90,6 +94,11 @@ def root():
 
 @app.on_event("startup")
 async def startup_event():
+
+    try:
+        initialize_database()
+    except Exception as e:
+        print(f"Database initialization failed or pending: {e}")
 
     asyncio.create_task(
         autonomous_detection_loop()

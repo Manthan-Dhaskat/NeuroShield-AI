@@ -49,10 +49,16 @@ class AnomalyDetector:
             features
         )[0]
 
-        return {
-            "anomaly":
-                prediction[0] == -1,
+        is_anomaly = prediction[0] == -1
 
-            "score":
-                abs(float(score))
+        # In scikit-learn, decision_function returns negative values for anomalies and positive for normal data.
+        # Map this to an anomaly score between 0.0 (normal) and 1.0 (anomalous).
+        if is_anomaly:
+            anomaly_score = max(0.5, min(1.0, 0.5 - float(score)))
+        else:
+            anomaly_score = max(0.0, min(0.49, 0.15 - (float(score) / 2.0)))
+
+        return {
+            "anomaly": is_anomaly,
+            "score": anomaly_score
         }

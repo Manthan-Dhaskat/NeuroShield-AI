@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { useThreatStore } from "@/store/threatStore";
 import { useIncidentStore } from "@/store/incidentStore";
+import { useMetricStore } from "@/store/metricStore";
 
 export const useWebSocket = () => {
   const addThreat =
@@ -16,6 +17,12 @@ export const useWebSocket = () => {
     useIncidentStore(
       (state) =>
         state.addIncident
+    );
+
+  const addMetric =
+    useMetricStore(
+      (state) =>
+        state.addMetric
     );
 
   useEffect(() => {
@@ -54,6 +61,9 @@ export const useWebSocket = () => {
           break;
 
         case "system_metrics":
+          addMetric(
+            message.data
+          );
           break;
 
         default:
@@ -81,5 +91,6 @@ export const useWebSocket = () => {
   }, [
     addThreat,
     addIncident,
+    addMetric,
   ]);
 };

@@ -56,7 +56,7 @@ export default function ThreatFeed() {
           </h2>
 
           <p className="text-sm text-zinc-400">
-            Real-time detected threats
+            Latest 3 detected threats
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function ThreatFeed() {
       </div>
 
       <div className="space-y-4">
-        {threats.map((threat) => {
+        {threats.slice(0, 3).map((threat) => {
           const style = getSeverityStyle(
             threat.severity
           );

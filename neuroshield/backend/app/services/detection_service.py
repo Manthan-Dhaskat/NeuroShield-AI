@@ -1,5 +1,3 @@
-from sklearn import metrics
-
 from app.monitoring.collector import (
     Collector
 )

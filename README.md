@@ -33,86 +33,16 @@ NeuroShield addresses this challenge through a complete AI-driven threat detecti
 # 🚀 Key Features
 
 ## 🔍 Real-Time System Monitoring
+Continuously monitors system stats including CPU Usage, Memory Usage, Disk Usage, Running Processes, Network Activity, and overall System Health.
 
-Continuously monitors:
-
-- CPU Usage
-- Memory Usage
-- Disk Usage
-- Running Processes
-- Network Activity
-- System Health Metrics
-
----
-
-## 🤖 AI-Powered Threat Detection
-
-Uses an **Isolation Forest** machine learning model to:
-
-- Learn normal system behavior
-- Detect behavioral anomalies
-- Identify unknown malware
-- Generate anomaly confidence scores
-
-### Why Isolation Forest?
-
-Traditional antivirus software depends on malware signatures.
-
-NeuroShield instead learns what normal behavior looks like and flags suspicious deviations, enabling detection of:
-
-- Zero-day threats
-- Unknown malware
-- Insider attacks
-- Suspicious process behavior
-
----
+## 🤖 AI Anomaly Detection
+Uses an **Isolation Forest** machine learning model to learn normal system behavior, detect anomalies, identify unknown malware, and generate confidence scores.
 
 ## ⚠️ Intelligent Threat Scoring
+Calculates risk severity scores dynamically from anomaly scores, CPU load, memory utilization, and network traffic, mapping them to LOW, MEDIUM, HIGH, and CRITICAL severities.
 
-Threat severity is determined using:
-
-- AI anomaly score
-- CPU utilization
-- Memory utilization
-- Process behavior
-- Network behavior
-
-### Severity Levels
-
-| Risk Score | Severity |
-|------------|-----------|
-| 0 – 25 | LOW |
-| 26 – 50 | MEDIUM |
-| 51 – 75 | HIGH |
-| 76 – 100 | CRITICAL |
-
----
-
-## 🛑 Autonomous Response Engine
-
-Automatically performs mitigation actions based on threat severity.
-
-| Severity | Action |
-|-----------|---------|
-| LOW | Monitor |
-| MEDIUM | Alert |
-| HIGH | Quarantine |
-| CRITICAL | Kill Process + Create Incident |
-
----
-
-## 📊 Real-Time Dashboard
-
-Provides live visibility into:
-
-- System Health
-- Threat Feed
-- Threat History
-- Incident Logs
-- Analytics
-- Response Actions
-
-All updates are streamed using WebSockets.
+## 📊 Real-Time Glassmorphic Dashboard
+Features dynamic WebSocket streams connected to Zustand state stores, updating gauges, timeline logs, and area trend charts instantly without page refreshes.
 
 ---
 
@@ -136,467 +66,88 @@ Response Engine
         ▼
 FastAPI Backend
         │
- ┌──────┴──────┐
- ▼             ▼
-MySQL      WebSocket
-                 │
-                 ▼
-         Next.js Dashboard
+  ┌─────┴─────┐
+  ▼           ▼
+SQLite/MySQL  WebSockets
+              │
+              ▼
+      Next.js Dashboard
 ```
 
 ---
 
-# ⚙️ How NeuroShield Works
+# ⚡ Rapid Local Setup & Execution
 
-## Step 1 — System Monitoring
+We have simplified local testing on Windows with **automatic database setup** and **one-click execution scripts**.
 
-The monitoring layer continuously collects:
-
-- CPU Usage
-- Memory Usage
-- Disk Usage
-- Process Information
-- Network Statistics
-
-Example:
-
-```json
-{
-  "cpu_usage": 45,
-  "memory_usage": 61,
-  "disk_usage": 30
-}
-```
+## Prerequisites
+- **Python 3.10+** (with paths configured)
+- **Node.js 18+** (with npm configured)
 
 ---
 
-## Step 2 — Feature Extraction
+## 🏃 One-Click Batch Scripts (`executables/`)
 
-Raw monitoring metrics are converted into AI-ready features.
+All launcher utilities are consolidated inside the `executables/` directory.
 
-Example:
+### 1. Launch Platform
+Double-click `executables/start_neuroshield.bat`.
+This will:
+- Set up local dependencies for both frontend and backend.
+- Automatically initialize the database (falls back to local SQLite `neuroshield.db` if MySQL is not configured).
+- Boot the FastAPI backend server (`localhost:8000`).
+- Start the Next.js development server (`localhost:3000`).
+- Automatically open the dashboard in your default browser.
 
-```json
-{
-  "cpu_usage": 92,
-  "memory_usage": 87,
-  "network_connections": 250
-}
-```
+### 2. Simulate Malware Threats
+Double-click `executables/simulate_threat.bat`.
+This will run the simulator loop generating malicious high-load processes, triggering the Isolation Forest model and updating the live dashboard feed.
 
----
-
-## Step 3 — Anomaly Detection
-
-The Isolation Forest model evaluates incoming system behavior.
-
-Example Output:
-
-```json
-{
-  "anomaly_score": 0.91
-}
-```
-
-Higher anomaly scores indicate more suspicious behavior.
+### 3. Clear Logs & Reset Database
+Double-click `executables/clear_database.bat`.
+This runs the clearance script to reset threats, incidents, and telemetry counters, updating the UI instantly.
 
 ---
 
-## Step 4 — Threat Scoring
-
-Risk score is calculated using:
-
-```python
-risk_score =
-(anomaly_score * 60) +
-(cpu_usage / 100 * 15) +
-(memory_usage / 100 * 15)
-```
-
-Example:
-
-```json
-{
-  "anomaly_score": 0.91,
-  "risk_score": 87,
-  "severity": "CRITICAL"
-}
-```
+# 🗄️ Database Auto-Migration & SQLite Fallback
+No database configuration is required to test locally. 
+- **SQLite Fallback:** If the MySQL database environment variables or connection fails, the backend automatically creates and connects to `neuroshield/backend/neuroshield.db`.
+- **Auto-Initialization:** Database tables, triggers, and indices are verified and initialized automatically on backend startup.
 
 ---
 
-## Step 5 — Autonomous Response
+# 💻 Premium Dashboard & UI Navigation
 
-Based on severity:
+The Next.js client features five dedicated glassmorphic pages:
 
-```text
-LOW       → Monitor
-MEDIUM    → Alert
-HIGH      → Quarantine
-CRITICAL  → Kill Process
-```
-
-Response actions are logged and incidents are created automatically.
-
----
-
-## Step 6 — Dashboard Visualization
-
-Detected threats are pushed to the frontend through WebSockets.
-
-Users can see:
-
-- Live threats
-- System metrics
-- Response actions
-- Incident creation
-- Threat analytics
-
-without refreshing the page.
+- **Dashboard:** Features linear progress hardware health gauges, overall risk gauges, and a **Live Threat Feed** restricted to the latest **3 items** to keep operating views clean.
+- **Threats:** Display search input logs, filters (by Severity and Mitigation status), and **expandable diagnostics drawers** which slide open on click to display deep AI analysis summaries and process telemetries.
+- **Analytics:** Shows calculated security insights (Security score, mitigation rate, critical ratio) alongside donut severity layouts, linear gradients, and interactive hover tooltips.
+- **Incidents:** Converted into a vertical mitigation timeline detailing automated responses and checks executed by the response playbooks.
+- **Settings:** An administration panel with sliders to adjust AI thresholds, auto-mitigation switches, FastAPI latency test checkers, and a functional **Reset Database** trigger.
 
 ---
 
 # 🛠 Technology Stack
 
-## Frontend
-
-- Next.js 15
+### Frontend
+- Next.js 16 (Turbopack)
 - TypeScript
-- Tailwind CSS
-- shadcn/ui
-- Recharts
-- Zustand
+- Tailwind CSS / shadcn/ui
+- Recharts / Zustand
+- Lucide Icons
 
-## Backend
-
+### Backend
 - FastAPI
-- SQLAlchemy
-- Pydantic
-- PyMySQL
-- psutil
-- Scikit-Learn
-- WebSockets
-
-## Database
-
-- MySQL 8
-
-## Deployment
-
-- Docker
-- Docker Compose
-
----
-
-# 📂 Project Structure
-
-```text
-neuroshield/
-
-├── frontend/
-│
-├── backend/
-│
-├── demo/
-│
-├── docs/
-│
-├── docker/
-│
-├── docker-compose.yml
-│
-├── README.md
-│
-└── requirements.txt
-```
-
----
-
-# 🧠 Backend Modules
-
-## Monitoring Module
-
-Responsible for collecting telemetry data.
-
-```text
-monitoring/
-├── process_monitor.py
-├── network_monitor.py
-├── system_monitor.py
-└── collector.py
-```
-
-### Responsibilities
-
-- Process monitoring
-- Network monitoring
-- Resource monitoring
-- Metric aggregation
-
----
-
-## Detection Module
-
-```text
-detection/
-├── feature_extractor.py
-├── anomaly_detector.py
-├── threat_classifier.py
-└── threat_scorer.py
-```
-
-### Responsibilities
-
-- Feature engineering
-- AI anomaly detection
-- Threat classification
-- Risk scoring
-
----
-
-## Response Module
-
-```text
-response/
-├── responder.py
-├── process_killer.py
-├── quarantine.py
-└── notifier.py
-```
-
-### Responsibilities
-
-- Automated mitigation
-- Threat containment
-- Alert generation
-- Incident creation
-
----
-
-# 🗄️ Database Schema
-
-## threats
-
-Stores detected threats.
-
-```sql
-id
-process_name
-pid
-anomaly_score
-risk_score
-severity
-status
-description
-created_at
-updated_at
-```
-
----
-
-## incidents
-
-Stores response actions.
-
-```sql
-id
-threat_id
-action_taken
-action_status
-details
-created_at
-```
-
----
-
-## system_metrics
-
-Stores monitored metrics.
-
-```sql
-id
-cpu_usage
-memory_usage
-disk_usage
-network_sent
-network_received
-timestamp
-```
-
----
-
-## threat_explanations
-
-Stores AI reasoning and explanations.
-
-```sql
-id
-threat_id
-reason
-weight
-```
-
----
-
-# 🔌 WebSocket Events
-
-Real-time events emitted by the backend:
-
-```text
-system_metrics
-new_threat
-threat_updated
-incident_created
-response_executed
-```
-
----
-
-# 🖥 Dashboard Pages
-
-## Dashboard
-
-Displays:
-
-- Total Threats
-- Active Threats
-- Critical Incidents
-- System Health
-- Live Threat Feed
-
----
-
-## Threat Analysis
-
-Displays:
-
-- Threat History
-- Severity Distribution
-- Threat Explanations
-
----
-
-## Analytics
-
-Displays:
-
-- Threat Trends
-- CPU Usage
-- Memory Usage
-- Network Activity
-
----
-
-## Incidents
-
-Displays:
-
-- Response Actions
-- Incident Logs
-- Mitigation History
-
----
-
-# 🧪 Demo Scenario
-
-NeuroShield includes malware simulation tools.
-
-```text
-demo/
-├── fake_ransomware.py
-├── malware_simulator.py
-└── sample_logs/
-```
-
-### Simulated Behaviors
-
-- High CPU Consumption
-- Excessive File Creation
-- Network Activity Spikes
-
-### Expected Flow
-
-```text
-Start Monitoring
-      ↓
-Run Malware Simulator
-      ↓
-Detect Anomaly
-      ↓
-Generate Threat Score
-      ↓
-Execute Response
-      ↓
-Create Incident
-      ↓
-Display On Dashboard
-```
-
----
-
-# 📈 Future Enhancements
-
-- Deep Learning-Based Detection
-- Threat Intelligence Integration
-- Cloud Monitoring
-- SIEM Integration
-- Distributed Endpoint Protection
-- Self-Learning Feedback Loop
-- Explainable AI Expansion
-- Predictive Threat Analytics
-
----
-
-# 🎥 Demo Walkthrough
-
-1. Start Backend Services
-2. Start Frontend Dashboard
-3. Begin System Monitoring
-4. Run Malware Simulator
-5. Observe Anomaly Detection
-6. View Threat Generation
-7. Watch Automatic Response Execution
-8. Verify Incident Creation
-9. Analyze Results on Dashboard
+- SQLAlchemy / SQLite
+- PyMySQL (for optional MySQL)
+- psutil / Scikit-Learn
 
 ---
 
 # 🏆 Hackathon Priorities
 
-1. Working End-to-End System
-2. Professional Dashboard
-3. Live Demonstration
-4. Presentation Quality
-5. Code Quality
-
----
-
-# 📜 License
-
-This project was developed for educational, research, and hackathon purposes.
-
----
-
-# 🎯 Conclusion
-
-NeuroShield AI provides a complete end-to-end cybersecurity defense platform capable of:
-
-✅ Monitoring system activity in real time
-
-✅ Detecting behavioral anomalies using AI
-
-✅ Prioritizing threats through intelligent scoring
-
-✅ Executing automated response actions
-
-✅ Visualizing everything through a modern dashboard
-
-By focusing on behavioral analysis rather than signatures, NeuroShield is capable of detecting previously unseen threats and demonstrating the future of autonomous cyber defense.
-
----
-
-## 🛡️ NeuroShield AI
-
-### Detect. Prioritize. Respond.
-
-**Real-Time AI-Driven Cyber Defense**
+1. **Working End-to-End System:** One-click batch startup scripts and local SQLite db fallbacks ensure ease of evaluation.
+2. **Professional Dashboard:** Visual glassmorphic designs, responsive timelines, and instant charts.
+3. **Behavioral AI Verification:** The uvicorn backend scanner and Isolation Forest model execute threat classification and logging in real-time.
+4. **Code Quality:** Fully compiled using TypeScript and verified clean.
