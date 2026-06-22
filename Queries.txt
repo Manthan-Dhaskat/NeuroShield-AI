@@ -1,0 +1,8 @@
+DELETE FROM incidents;
+DELETE FROM threats;
+DELETE FROM system_metrics;
+DELETE FROM threat_explanations;
+ALTER TABLE threats AUTO_INCREMENT = 1;
+ALTER TABLE incidents AUTO_INCREMENT = 1;
+ALTER TABLE system_metrics AUTO_INCREMENT = 1;
+ALTER TABLE threat_explanations AUTO_INCREMENT = 1;
