@@ -13,14 +13,17 @@ export default function SettingsPage() {
   const { setThreats } = useThreatStore();
   const { setIncidents } = useIncidentStore();
 
+  const [targetAppName, setTargetAppName] = useState("protected_app.py");
   const [medThreshold, setMedThreshold] = useState(30);
   const [highThreshold, setHighThreshold] = useState(32);
   const [critThreshold, setCritThreshold] = useState(33);
 
   const [autoKill, setAutoKill] = useState(true);
+  const [forceShutdownOnCritical, setForceShutdownOnCritical] = useState(true);
   const [liveStream, setLiveStream] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(false);
 
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [dbResetStatus, setDbResetStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [apiStatus, setApiStatus] = useState<"Checking..." | "Active" | "Offline">("Checking...");
   const [apiLatency, setApiLatency] = useState<number | null>(null);
@@ -47,6 +50,46 @@ export default function SettingsPage() {
     const interval = setInterval(checkApi, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await api.get("/settings");
+        if (response.data) {
+          const d = response.data;
+          setTargetAppName(d.target_app_name || "protected_app.py");
+          setMedThreshold(d.med_threshold || 30);
+          setHighThreshold(d.high_threshold || 32);
+          setCritThreshold(d.crit_threshold || 33);
+          setAutoKill(d.auto_kill !== undefined ? d.auto_kill : true);
+          setForceShutdownOnCritical(d.force_shutdown_on_critical !== undefined ? d.force_shutdown_on_critical : true);
+        }
+      } catch (err) {
+        console.error("Failed to load app settings:", err);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const handleSaveSettings = async () => {
+    setSaveStatus("saving");
+    try {
+      await api.post("/settings", {
+        target_app_name: targetAppName,
+        med_threshold: medThreshold,
+        high_threshold: highThreshold,
+        crit_threshold: critThreshold,
+        auto_kill: autoKill,
+        force_shutdown_on_critical: forceShutdownOnCritical
+      });
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    } catch (err) {
+      console.error("Failed to save settings:", err);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    }
+  };
 
   const handleResetDatabase = async () => {
     if (!confirm("Warning: This will clear all historical threats, system metrics, and incident actions from the database. Are you sure?")) {
@@ -105,15 +148,27 @@ export default function SettingsPage() {
               <div className="flex items-center gap-3 border-b border-zinc-800 pb-4">
                 <Shield className="text-blue-405" size={20} />
                 <h2 className="text-xl font-semibold">
-                  AI Detection Limits
+                  AI Detection Limits & App Protection
                 </h2>
               </div>
 
               <div className="space-y-5">
                 <div className="space-y-2">
+                  <label className="text-xs font-medium text-zinc-300">Protected Target Application Process</label>
+                  <input
+                    type="text"
+                    value={targetAppName}
+                    onChange={(e) => setTargetAppName(e.target.value)}
+                    placeholder="e.g. protected_app.py"
+                    className="w-full bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all font-mono"
+                  />
+                  <p className="text-[10px] text-zinc-500">The shield targets and secures any running process matching this name.</p>
+                </div>
+
+                <div className="space-y-2">
                   <div className="flex justify-between text-xs font-medium">
                     <span className="text-zinc-300">Medium Anomaly Range (Threshold)</span>
-                    <span className="text-yellow-405 font-semibold">{medThreshold}%</span>
+                    <span className="text-yellow-450 font-semibold">{medThreshold}%</span>
                   </div>
                   <input
                     type="range"
@@ -157,8 +212,13 @@ export default function SettingsPage() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <button className="flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl text-xs font-semibold transition-all">
-                  <Save size={14} /> Save Thresholds
+                <button
+                  onClick={handleSaveSettings}
+                  disabled={saveStatus === "saving"}
+                  className="flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Save size={14} /> 
+                  {saveStatus === "saving" ? "Saving..." : saveStatus === "success" ? "Settings Saved!" : saveStatus === "error" ? "Error Saving" : "Save Settings"}
                 </button>
               </div>
             </div>
@@ -185,6 +245,23 @@ export default function SettingsPage() {
                   >
                     <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
                       autoKill ? "translate-x-5" : "translate-x-0"
+                    }`} />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/20 border border-zinc-800/80">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Critical Force Shutdown</p>
+                    <p className="text-xs text-zinc-500">Force shut down target app on Critical severity alert</p>
+                  </div>
+                  <button
+                    onClick={() => setForceShutdownOnCritical(!forceShutdownOnCritical)}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      forceShutdownOnCritical ? "bg-blue-500" : "bg-zinc-800"
+                    }`}
+                  >
+                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      forceShutdownOnCritical ? "translate-x-5" : "translate-x-0"
                     }`} />
                   </button>
                 </div>

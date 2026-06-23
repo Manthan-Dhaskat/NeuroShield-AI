@@ -5,6 +5,7 @@ from sqlalchemy import (
     Float,
     DateTime,
     ForeignKey,
+    Boolean,
 )
 
 from sqlalchemy.orm import (
@@ -158,4 +159,48 @@ class ThreatExplanation(Base):
 
     explanation = Column(
         String(1000)
+    )
+
+
+class AppSettings(Base):
+    __tablename__ = "app_settings"
+
+    id = Column(
+        Integer,
+        primary_key=True
+    )
+
+    target_app_name = Column(
+        String(255),
+        default="protected_app.py"
+    )
+
+    med_threshold = Column(
+        Float,
+        default=30.0
+    )
+
+    high_threshold = Column(
+        Float,
+        default=32.0
+    )
+
+    crit_threshold = Column(
+        Float,
+        default=33.0
+    )
+
+    auto_kill = Column(
+        Boolean,
+        default=True
+    )
+
+    force_shutdown_on_critical = Column(
+        Boolean,
+        default=True
+    )
+
+    theme = Column(
+        String(50),
+        default="dark"
     )

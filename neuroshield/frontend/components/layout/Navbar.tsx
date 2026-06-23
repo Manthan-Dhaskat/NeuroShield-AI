@@ -5,10 +5,14 @@ import {
   Shield,
   AlertTriangle,
   Activity,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import { useThreatStore } from "@/store/threatStore";
 import { useIncidentStore } from "@/store/incidentStore";
+import { useThemeStore } from "@/store/themeStore";
+import { api } from "@/lib/api";
 
 import { useEffect, useState } from "react";
 
@@ -17,6 +21,17 @@ import { incidentService } from "@/services/incidentService";
 
 export default function Navbar() {
   const { threats } = useThreatStore();
+  const { theme, toggleTheme } = useThemeStore();
+
+  const handleToggleTheme = async () => {
+    toggleTheme();
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    try {
+      await api.post("/settings", { theme: nextTheme });
+    } catch (err) {
+      console.error("Failed to persist theme settings:", err);
+    }
+  };
 
   const {
     incidents,
@@ -195,6 +210,30 @@ export default function Navbar() {
             {health}
           </span>
         </div>
+
+        <button
+          onClick={handleToggleTheme}
+          className="
+            h-11
+            w-11
+            rounded-xl
+            border
+            border-zinc-700
+            bg-zinc-800
+            flex
+            items-center
+            justify-center
+            hover:bg-zinc-700
+            transition-all
+            cursor-pointer
+          "
+        >
+          {theme === "light" ? (
+            <Moon size={18} className="text-zinc-500" />
+          ) : (
+            <Sun size={18} className="text-yellow-400" />
+          )}
+        </button>
 
         <div className="relative">
           <button

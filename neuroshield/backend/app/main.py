@@ -26,6 +26,7 @@ from app.api.routes import (
     monitoring,
     incidents,
     health,
+    settings as app_settings_router,
 )
 
 app = FastAPI(
@@ -80,6 +81,12 @@ app.include_router(
     health.router,
     prefix="/api/health",
     tags=["Health"]
+)
+
+app.include_router(
+    app_settings_router.router,
+    prefix="/api/settings",
+    tags=["Settings"]
 )
 
 

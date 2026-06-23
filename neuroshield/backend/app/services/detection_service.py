@@ -22,6 +22,8 @@ from app.detection.explainer import (
     ThreatExplainer
 )
 
+from app.core.settings_loader import get_active_settings
+
 
 class DetectionService:
 
@@ -55,9 +57,14 @@ class DetectionService:
             )
         )
 
+        settings = get_active_settings()
+
         severity = (
             ThreatClassifier.classify(
-                risk_score
+                risk_score,
+                med=settings.get("med_threshold", 40.0),
+                high=settings.get("high_threshold", 60.0),
+                crit=settings.get("crit_threshold", 80.0)
             )
         )
 

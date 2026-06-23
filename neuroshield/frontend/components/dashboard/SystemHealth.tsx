@@ -1,15 +1,15 @@
 "use client";
 
 import { useMetricStore } from "@/store/metricStore";
-import { Cpu, HardDrive, Layers } from "lucide-react";
+import { Cpu, HardDrive, Layers, Activity } from "lucide-react";
 
 export default function SystemHealth() {
   const { metrics } = useMetricStore();
-  const metric = metrics && metrics.length > 0 ? metrics[0] : null;
 
-  const cpu = metric?.cpu_usage !== undefined ? metric.cpu_usage : 0;
-  const memory = metric?.memory_usage !== undefined ? metric.memory_usage : 0;
-  const disk = metric?.disk_usage !== undefined ? metric.disk_usage : 0;
+  const metric = metrics && metrics.length > 0 ? metrics[0] : null;
+  const cpu = metric?.cpu_usage !== undefined ? metric.cpu_usage : 0.0;
+  const memory = metric?.memory_usage !== undefined ? metric.memory_usage : 0.0;
+  const disk = metric?.disk_usage !== undefined ? metric.disk_usage : 0.0;
 
   const getBarColor = (val: number, baseColor: string) => {
     if (val >= 80) return "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]";
@@ -24,12 +24,12 @@ export default function SystemHealth() {
   };
 
   return (
-    <div className="glow-card glow-border rounded-3xl p-6 transition-all duration-300">
-      <div className="flex items-center gap-3 mb-6">
-        <Cpu className="text-blue-400" size={22} />
+    <div className="glow-card glow-border rounded-3xl p-6 space-y-6 transition-all duration-300">
+      <div className="flex items-center gap-3 border-b border-zinc-800/50 pb-4">
+        <Activity className="text-blue-400" size={22} />
         <div>
-          <h2 className="text-xl font-semibold">System Hardware Health</h2>
-          <p className="text-xs text-zinc-400">Real-time resource utilization</p>
+          <h2 className="text-xl font-semibold">Protected Application Vitals</h2>
+          <p className="text-xs text-zinc-405">Real-time resource utilization gauges</p>
         </div>
       </div>
 
@@ -38,7 +38,7 @@ export default function SystemHealth() {
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm">
             <span className="flex items-center gap-2 text-zinc-300 font-medium">
-              <Cpu size={16} className="text-blue-400" /> CPU Usage
+              <Cpu size={16} className="text-blue-400" /> App CPU Usage
             </span>
             <span className={`font-mono ${getTextColor(cpu)}`}>{cpu.toFixed(1)}%</span>
           </div>
@@ -54,7 +54,7 @@ export default function SystemHealth() {
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm">
             <span className="flex items-center gap-2 text-zinc-300 font-medium">
-              <Layers size={16} className="text-purple-400" /> Memory Usage
+              <Layers size={16} className="text-purple-400" /> App RAM Usage
             </span>
             <span className={`font-mono ${getTextColor(memory)}`}>{memory.toFixed(1)}%</span>
           </div>
@@ -70,7 +70,7 @@ export default function SystemHealth() {
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm">
             <span className="flex items-center gap-2 text-zinc-300 font-medium">
-              <HardDrive size={16} className="text-emerald-400" /> Disk Usage
+              <HardDrive size={16} className="text-emerald-400" /> Disk Space
             </span>
             <span className={`font-mono ${getTextColor(disk)}`}>{disk.toFixed(1)}%</span>
           </div>

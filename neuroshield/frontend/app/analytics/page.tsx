@@ -6,7 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 
 import ThreatTrendChart from "@/components/charts/ThreatTrendChart";
 import SeverityChart from "@/components/charts/SeverityChart";
-import NetworkActivityChart from "@/components/charts/NetworkActivityChart";
+import AppVitalsChart from "@/components/charts/AppVitalsChart";
 
 import { threatService } from "@/services/threatService";
 import { useThreatStore } from "@/store/threatStore";
@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
               </h1>
 
               <p className="section-subtitle">
-                Threat intelligence and system telemetry insights
+                Threat intelligence and app vitals telemetry insights
               </p>
             </div>
             
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
             <SeverityChart />
           </div>
 
-          <NetworkActivityChart />
+          <AppVitalsChart />
         </main>
       </div>
     </div>

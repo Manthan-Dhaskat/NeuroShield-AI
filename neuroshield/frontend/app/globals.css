@@ -230,3 +230,158 @@
     color 0.25s ease,
     transform 0.25s ease;
 }
+
+/* Light Theme Variables */
+.light {
+  --background: oklch(0.98 0.005 240);
+  --foreground: oklch(0.15 0.01 240);
+  --card: oklch(1 0 0 / 80%);
+  --card-foreground: oklch(0.15 0.01 240);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.15 0.01 240);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.922 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.9 0.02 240);
+  --accent-foreground: oklch(0.15 0.01 240);
+  --destructive: oklch(0.6 0.18 20);
+  --border: oklch(0 0 0 / 12%);
+  --input: oklch(0 0 0 / 8%);
+  --ring: oklch(0.5 0.1 240);
+  --sidebar: oklch(0.96 0.005 240);
+  --sidebar-foreground: oklch(0.15 0.01 240);
+  --sidebar-border: oklch(0 0 0 / 10%);
+  --sidebar-accent: oklch(0.9 0.02 240);
+  --sidebar-accent-foreground: oklch(0.15 0.01 240);
+}
+
+body.light {
+  background:
+    radial-gradient(circle at top right,
+      rgba(59, 130, 246, 0.05),
+      transparent 30%),
+    radial-gradient(circle at bottom left,
+      rgba(239, 68, 68, 0.03),
+      transparent 30%),
+    #f4f4f5;
+  color: #18181b;
+}
+
+.light .glow-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.light .glow-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px rgba(59, 130, 246, 0.05),
+    0 0 40px rgba(59, 130, 246, 0.03),
+    0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.light .glow-border {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.light .page-background {
+  background:
+    radial-gradient(circle at top right,
+      rgba(59, 130, 246, 0.05),
+      transparent 35%),
+    radial-gradient(circle at bottom left,
+      rgba(239, 68, 68, 0.03),
+      transparent 35%),
+    #f4f4f5;
+}
+
+.light .section-title {
+  color: #09090b;
+}
+
+.light .section-subtitle {
+  color: #71717a;
+}
+
+.light .text-white {
+  color: #18181b !important;
+}
+
+.light input[type="range"] {
+  background: #e4e4e7;
+}
+
+/* Tailwind utility overrides for light theme */
+.light .bg-zinc-950 {
+  background-color: #fafafa !important;
+}
+
+.light .bg-zinc-900 {
+  background-color: #f4f4f5 !important;
+}
+
+.light .bg-zinc-900\/95 {
+  background-color: rgba(244, 244, 245, 0.95) !important;
+}
+
+.light .bg-zinc-900\/70 {
+  background-color: rgba(244, 244, 245, 0.7) !important;
+}
+
+.light .bg-zinc-900\/20 {
+  background-color: rgba(244, 244, 245, 0.2) !important;
+}
+
+.light .bg-zinc-900\/40 {
+  background-color: rgba(244, 244, 245, 0.4) !important;
+}
+
+.light .bg-zinc-800 {
+  background-color: #e4e4e7 !important;
+}
+
+.light .bg-zinc-800\/80 {
+  background-color: rgba(228, 228, 231, 0.8) !important;
+}
+
+.light .bg-zinc-800:hover {
+  background-color: #d4d4d8 !important;
+}
+
+.light .border-zinc-800 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light .border-zinc-800\/80 {
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light .border-zinc-700 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light .text-zinc-300 {
+  color: #27272a !important;
+}
+
+.light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.light .hover\:text-white:hover {
+  color: #09090b !important;
+}
+
+.light .bg-black {
+  background-color: #fafafa !important;
+}

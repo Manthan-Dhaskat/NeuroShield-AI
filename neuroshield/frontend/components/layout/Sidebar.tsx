@@ -188,7 +188,7 @@ export default function Sidebar() {
           "
         >
           <p className="text-sm text-zinc-400">
-            System Status
+            Shield Status
           </p>
 
           <div className="flex items-center gap-2 mt-2">
